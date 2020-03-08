@@ -17,3 +17,4 @@ data = np.array(
 flattened_data = reshape(data)
 print(flattened_data, len(flattened_data))
 print(flattened_data[2])
+print(data.flatten()[2])
