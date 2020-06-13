@@ -2,6 +2,8 @@
 
 import math
 
+# from scipy.spatial import distance_matrix
+import scipy.spatial
 import numpy as np
 
 
@@ -36,7 +38,7 @@ def inner(vector1, vector2, A=None):
        or
            <x, y> = x.T @ A @ y
     """
-    A = A if A is not None else np.identity(vector1.size)
+    A = determine_matrix(A, vector1)
 
     return vector1.T @ A @ vector2
 
@@ -50,7 +52,7 @@ def length(vector, A=None):
         or
             <x, x> = x.T @ A @ x
     """
-    A = A if A is not None else np.identity(vector.size)
+    A = determine_matrix(A, vector)
 
     return math.sqrt(vector.T @ A @ vector)
 
@@ -60,7 +62,7 @@ def distance(vector1, vector2, A=None):
         d(x, y) = ||x - y|| = sqrt(<(x - y), (x - y)>)
     """
     vector = vector1 - vector2
-    A = A if A is not None else np.identity(vector.size)
+    A = determine_matrix(A, vector)
 
     return math.sqrt(vector.T @ A @ vector)
 
@@ -69,13 +71,35 @@ def angle(vector1, vector2, A=None):
     """
         cos α = <x, y> / ||x|| ||y||
     """
-    A = A if A is not None else np.identity(vector1.size)
+    A = determine_matrix(A, vector1)
 
     return math.acos((vector1.T @ A @ vector2 / (length(vector1, A) * length(vector2, A))))
 
 
 def determine_matrix(A, vector):
     return A if A is not None else np.identity(vector.size)
+
+
+def pairwise_distance_matrix(X, Y):
+    """Compute the pairwise distance between rows of X and rows of Y
+
+    Arguments
+    ----------
+    X: ndarray of size (N, D)
+    Y: ndarray of size (M, D)
+
+    Returns
+    --------
+    distance_matrix: matrix of shape (N, M), each entry distance_matrix[i,j] is the distance between
+    ith row of X and the jth row of Y (we use the dot product to compute the distance).
+    """
+    # N, D = X.shape
+    # M, _ = Y.shape
+    # distance_matrix = np.zeros((N, M))
+    # for n in range(N):
+    #     for m in range(M):
+    #         distance_matrix[n, m] = distance(X[n], Y[m])
+    return scipy.spatial.distance_matrix(X, Y)
 
 
 x = np.array(
@@ -293,6 +317,13 @@ Mq5 = np.array(
     ]
 )
 
+X = np.array([[1., 2.],
+           [3., 4.]])
+
+Y = np.array([[2., 3.],
+           [4., 5.]])
+
+print(pairwise_distance_matrix(X, Y))
 print(f"*** Inner Product: Lengths and Distances ***")
 print(f"Q1: Length = {length(xq1, Aq1)}, which is the square root of {length(xq1, Aq1) ** 2}." )
 print(f"Q2: Distance = {distance(xq2, yq2, Aq1)}, which is the square root of {distance(xq2, yq2, Aq1) ** 2}." )
@@ -306,10 +337,9 @@ print(f"Q2: Angle = {angle(aq2, bq2, Mq2)} radians")
 print(f"Q3: Angle = {angle(aq3, bq3, Mq3)} radians")
 print(f"Q4: Angle = {angle(aq4, bq4, Mq4)} radians")
 print(f"Q5: Angle = {angle(aq5, bq5, Mq5)} radians")
-# print(f"Length = {length(x)}, which is the square root of {length(x) ** 2}." )
-# print(f"Length = {length(x, A)}, which is the square root of {length(x, A) ** 2}." )
-# print(f"Distance = {distance(y, z)}, which is the square root of {distance(y, z) ** 2}." )
-# print(f"Distance = {distance(y, z, A)}, which is the square root of {distance(y, z, A) ** 2}." )
-# print(f"Angle = {angle(y, z)} radians.")
-# print(f"Angle = {angle(y, z, A)} radians.")
-
+print(f"Length = {length(x)}, which is the square root of {length(x) ** 2}." )
+print(f"Length = {length(x, A)}, which is the square root of {length(x, A) ** 2}." )
+print(f"Distance = {distance(y, z)}, which is the square root of {distance(y, z) ** 2}." )
+print(f"Distance = {distance(y, z, A)}, which is the square root of {distance(y, z, A) ** 2}." )
+print(f"Angle = {angle(y, z)} radians.")
+print(f"Angle = {angle(y, z, A)} radians.")
